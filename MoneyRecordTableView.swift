@@ -30,7 +30,10 @@ class MoneyRecordTableViewController: UIViewController  {
     @IBOutlet private weak var pickerView: UIPickerView!
     
     // MARK: - Sort
-    private var sortItem:SortItem? = .none
+    private var sortItem:SortItem? {
+        // none or SortItem
+        return userDefaultsViewModels.getCurrentSort()
+    }
     
     // MARK: - Override
     override func viewDidLoad() {
@@ -69,6 +72,7 @@ class MoneyRecordTableViewController: UIViewController  {
         // MARK: - View
         nameLabelButton.setTitle(userDefaultsViewModels.getCurrentBorrower(), for: .normal)
         refreshData()
+        setSort()
         setResultLabel()
         
         // 遷移戻り後のタップを解除する
@@ -127,7 +131,7 @@ class MoneyRecordTableViewController: UIViewController  {
     }
     
     @objc func tapSortViewButton(){
-        sortItem = .none
+        userDefaultsViewModels.setCurrentSort("none")
         sortViewButton.tintColor = UIColor(named: "FoundationColor")
         refreshData()
         setResultLabel()
@@ -197,49 +201,60 @@ extension MoneyRecordTableViewController: UIPickerViewDelegate, UIPickerViewData
     
     // 選択された時の挙動
     func pickerView(_ pickerView: UIPickerView,didSelectRow row: Int,inComponent component: Int) {
-        sortItem = SortItem.allCases[row]
-        
+        userDefaultsViewModels.setCurrentSort(SortItem.allCases[row].rawValue)
+        setSort()
+    }
+    
+    // ソートを反映させたデータの読み込み
+    func setSort(){
         switch sortItem {
             
         case .amountAsce:
             realmCRUDViewModel.setSortMoneyRecords(key: "amount", asce: true)
             table.reloadData()
             sortViewButton.tintColor = .orange
+            self.pickerView.selectRow(0,inComponent: 0, animated:true)
             break
             
         case .amountDesc:
             realmCRUDViewModel.setSortMoneyRecords(key: "amount", asce: false)
             table.reloadData()
             sortViewButton.tintColor = .orange
+            self.pickerView.selectRow(1,inComponent: 0, animated:true)
             break
             
         case .dateAsce:
             realmCRUDViewModel.setSortMoneyRecords(key: "date", asce: true)
             table.reloadData()
             sortViewButton.tintColor = .orange
+            self.pickerView.selectRow(2,inComponent: 0, animated:true)
             break
             
         case .dateDesc:
             realmCRUDViewModel.setSortMoneyRecords(key: "date", asce: false)
             table.reloadData()
             sortViewButton.tintColor = .orange
+            self.pickerView.selectRow(3,inComponent: 0, animated:true)
             break
             
         case .borrowOnly:
             realmCRUDViewModel.setBorrowOnlyMoneyRecords()
             table.reloadData()
             sortViewButton.tintColor = .orange
+            self.pickerView.selectRow(4,inComponent: 0, animated:true)
             break
             
         case .loanOnly:
             realmCRUDViewModel.setLoanOnlyMoneyRecords()
             table.reloadData()
             sortViewButton.tintColor = .orange
+            self.pickerView.selectRow(5,inComponent: 0, animated:true)
             break
             
         case .none:
             realmCRUDViewModel.setAllMoneyRecords()
             table.reloadData()
+            self.pickerView.selectRow(0,inComponent: 0, animated:true)
             break
         }
     }
