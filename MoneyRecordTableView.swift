@@ -140,7 +140,9 @@ class MoneyRecordTableViewController: UIViewController  {
     @objc func tapBorrowButton(){
         realmCRUDViewModel.setBorrowOnlyMoneyRecords()
         table.reloadData()
+        userDefaultsViewModels.setCurrentSort("借のみ")
         sortViewButton.tintColor = .orange
+        self.pickerView.selectRow(4,inComponent: 0, animated:true)
         
         
         let name = userDefaultsViewModels.getCurrentBorrower()
@@ -157,7 +159,9 @@ class MoneyRecordTableViewController: UIViewController  {
     @objc func tapLoanButton(){
         realmCRUDViewModel.setLoanOnlyMoneyRecords()
         table.reloadData()
+        userDefaultsViewModels.setCurrentSort("貸しのみ")
         sortViewButton.tintColor = .orange
+        self.pickerView.selectRow(5,inComponent: 0, animated:true)
         
         let name = userDefaultsViewModels.getCurrentBorrower()
         if name != "unknown"{
