@@ -108,10 +108,12 @@ class AddMoneyRecordViewController: UIViewController {
             // Update?
             if item == nil{
                 createRecord()
+                confirmAlert()
             }else{
                 updateRecord()
+                confirmAlert()
             }
-            confirmAlert()
+            
         }
     }
     
