@@ -18,7 +18,7 @@ class MoneyRecordTableViewCell: UITableViewCell {
     
     
     func create(amount: Int, desc: String,borrow:Bool,date:Date) {
-        amountLabel.text = String(amount)
+        amountLabel.text = MoneyRecord.commaSeparateThreeDigits(amount)
         descLabel.text = desc
         if borrow {
             borrowView.isHidden = true

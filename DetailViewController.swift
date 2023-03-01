@@ -40,7 +40,7 @@ class DetailViewController: UIViewController {
             return
         }
         
-        amountLabel?.text = String(item!.amount)
+        amountLabel?.text = MoneyRecord.commaSeparateThreeDigits(item!.amount)
         descLabel?.text = item!.desc
         if item!.borrow  {
             baseView.backgroundColor = UIColor(named: "ThemaColor2")

@@ -12,7 +12,6 @@ class AddMoneyRecordViewController: UIViewController {
     let admobViewModel = AdMobViewModel()
     let realmCRUDViewModel = RealmCRUDViewModel()
     
-    
     // MARK: - Update View
     var item:MoneyRecord? = nil
     
@@ -26,6 +25,11 @@ class AddMoneyRecordViewController: UIViewController {
     @IBOutlet private weak var picker:UIDatePicker!
     
     @IBOutlet private weak var executeButton: UIButton!
+    
+    // MARK: - Outlet PickerButton
+    @IBOutlet private weak var pickerButton: UIButton!
+    // MARK: - Outlet Picker
+    @IBOutlet private weak var pickerView: UIPickerView!
     
     // MARK: - Update View
     func setUpdateUIView() {
@@ -49,6 +53,7 @@ class AddMoneyRecordViewController: UIViewController {
         borrowButton.addTarget(self, action: #selector(tapBorrowButton), for: .touchUpInside)
         loanButton.addTarget(self, action: #selector(tapLoanButton), for: .touchUpInside)
         executeButton.addTarget(self, action: #selector(tapExecuteButton), for: .touchUpInside)
+        pickerButton.addTarget(self, action: #selector(tapPickerButton), for: .touchUpInside)
         
         baseView.layer.cornerRadius = 10
         baseView.clipsToBounds = true
@@ -70,6 +75,17 @@ class AddMoneyRecordViewController: UIViewController {
         descText.inputAccessoryView = toolBar
         // MARK: - 閉じるボタン
         
+        // Picker用に更新 currentBorrowes
+        realmCRUDViewModel.setAllMoneyRecords()
+        
+        if !isEmptyDescList() {
+            pickerButton.tintColor = UIColor(named: "ThemaColor6")
+            pickerButton.isEnabled = true
+            pickerView.selectRow(realmCRUDViewModel.currentBorrower!.getDescList().count - 1 ,inComponent: 0, animated:true)
+        }else{
+            pickerButton.tintColor = .gray
+            pickerButton.isEnabled = false
+        }
     }
     
     // MARK: - 閉じるボタン
@@ -79,13 +95,27 @@ class AddMoneyRecordViewController: UIViewController {
     
     @objc func tapBorrowButton(){
         toggle = false
-        
         borrowEnabled()
-        
     }
+    
     @objc func tapLoanButton(){
         toggle = true
         borrowEnabled()
+    }
+    
+    @objc func tapPickerButton(){
+        if !isEmptyDescList() {
+            pickerView.isHidden.toggle()
+        }
+    }
+    
+    private func isEmptyDescList() -> Bool{
+        if realmCRUDViewModel.currentBorrower != nil{
+            if realmCRUDViewModel.currentBorrower!.getDescList().count != 0 {
+                    return false
+            }
+        }
+        return true
     }
     
     private func borrowEnabled(){
@@ -153,3 +183,31 @@ class AddMoneyRecordViewController: UIViewController {
     }
 }
 
+// MARK: - Extension PickerView
+extension AddMoneyRecordViewController: UIPickerViewDelegate, UIPickerViewDataSource{
+    
+    // 列の数
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    // 行数
+    func pickerView(_ pickerView: UIPickerView,numberOfRowsInComponent component: Int) -> Int {
+        return realmCRUDViewModel.currentBorrower?.getDescList().count ?? 0
+    }
+    
+    // 最初の表示
+    func pickerView(_ pickerView: UIPickerView,titleForRow row: Int,forComponent component: Int) -> String? {
+        return realmCRUDViewModel.currentBorrower?.getDescList()[row]
+    }
+    
+    // 選択された時の挙動
+    func pickerView(_ pickerView: UIPickerView,didSelectRow row: Int,inComponent component: Int) {
+        if realmCRUDViewModel.currentBorrower?.getDescList()[row] != "-" {
+            descText.text = realmCRUDViewModel.currentBorrower?.getDescList()[row]
+        }else{
+            descText.text = ""
+        }
+    }
+    
+}
