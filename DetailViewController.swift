@@ -58,7 +58,7 @@ class DetailViewController: UIViewController {
         baseView.layer.opacity = 0.9
         
         let dvm = DateViewModel()
-        dateLabel?.text = dvm.df.string(from: item!.date)
+        dateLabel?.text = dvm.getString(item!.date)
         
     }
 
@@ -76,6 +76,4 @@ class DetailViewController: UIViewController {
         alert.addAction(cancel)
         self.present(alert,animated: true)
     }
-    
-    
 }

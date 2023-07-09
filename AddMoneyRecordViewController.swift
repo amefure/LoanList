@@ -9,8 +9,9 @@ import UIKit
 
 class AddMoneyRecordViewController: UIViewController {
     
-    let admobViewModel = AdMobViewModel()
-    let realmCRUDViewModel = RealmCRUDViewModel()
+    // MARK: - ViewModel
+    private let admobViewModel = AdMobViewModel()
+    private let realmCRUDViewModel = RealmCRUDViewModel()
     
     // MARK: - Update View
     var item:MoneyRecord? = nil
@@ -64,7 +65,7 @@ class AddMoneyRecordViewController: UIViewController {
         picker.locale = Locale(identifier: "ja_JP")
         picker.timeZone = TimeZone(identifier: "Asia/Tokyo")
         picker.calendar = Calendar(identifier: .gregorian)
-
+        
         // MARK: - 閉じるボタン
         let toolBar = UIToolbar()
         toolBar.sizeToFit()
@@ -112,7 +113,7 @@ class AddMoneyRecordViewController: UIViewController {
     private func isEmptyDescList() -> Bool{
         if realmCRUDViewModel.currentBorrower != nil{
             if realmCRUDViewModel.currentBorrower!.getDescList().count != 0 {
-                    return false
+                return false
             }
         }
         return true
@@ -135,15 +136,18 @@ class AddMoneyRecordViewController: UIViewController {
     // MARK: - ボタンタップ時
     @objc func tapExecuteButton() {
         if amountText.hasText {
-            // Update?
-            if item == nil{
-                createRecord()
-                confirmAlert()
-            }else{
-                updateRecord()
-                confirmAlert()
+            guard Int(amountText.text!) != nil else {
+                errorAlert()
+                return
             }
-            
+                // Update?
+                if item == nil{
+                    createRecord()
+                    confirmAlert()
+                }else{
+                    updateRecord()
+                    confirmAlert()
+                }
         }
     }
     
@@ -181,6 +185,17 @@ class AddMoneyRecordViewController: UIViewController {
         alert.addAction(ok)
         self.present(alert,animated: true)
     }
+    
+    // MARK: - ErrorAlert
+    private func errorAlert(){
+        let message = "数値で正しく入力してください"
+        let alert = UIAlertController(title: "登録できませんでした...", message: message, preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default,handler: { action in
+            self.amountText.text! = ""
+        })
+        alert.addAction(ok)
+        self.present(alert,animated: true)
+    }
 }
 
 // MARK: - Extension PickerView
@@ -209,5 +224,4 @@ extension AddMoneyRecordViewController: UIPickerViewDelegate, UIPickerViewDataSo
             descText.text = ""
         }
     }
-    
 }

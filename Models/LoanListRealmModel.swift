@@ -12,6 +12,7 @@ import RealmSwift
 class Borrower: Object,ObjectKeyIdentifiable{
     @Persisted(primaryKey: true) var id: ObjectId
     @Persisted var name:String = ""
+    @Persisted var returnFlag:Bool = false
     @Persisted var moneyRecords = RealmSwift.List<MoneyRecord>()
     
     // MARK: -　計算プロパティ
@@ -34,13 +35,24 @@ class Borrower: Object,ObjectKeyIdentifiable{
     }
     
     var calculationResult:String {
-        if borrowSum > loanSum{
-            return "+ \(MoneyRecord.commaSeparateThreeDigits(borrowSum - loanSum))円"
-        }else if borrowSum < loanSum{
-            return "- \(MoneyRecord.commaSeparateThreeDigits(loanSum - borrowSum))円"
+        if UserDefaultsViewModels().getOperatorFlag() == "借"{
+            if borrowSum > loanSum{
+                return "+ \(MoneyRecord.commaSeparateThreeDigits(borrowSum - loanSum))円"
+            }else if borrowSum < loanSum{
+                return "- \(MoneyRecord.commaSeparateThreeDigits(loanSum - borrowSum))円"
+            }else{
+                return "± \(MoneyRecord.commaSeparateThreeDigits(loanSum - borrowSum))円"
+            }
         }else{
-            return "± \(MoneyRecord.commaSeparateThreeDigits(loanSum - borrowSum))円"
+            if borrowSum > loanSum{
+                return "- \(MoneyRecord.commaSeparateThreeDigits(borrowSum - loanSum))円"
+            }else if borrowSum < loanSum{
+                return "+ \(MoneyRecord.commaSeparateThreeDigits(loanSum - borrowSum))円"
+            }else{
+                return "± \(MoneyRecord.commaSeparateThreeDigits(loanSum - borrowSum))円"
+            }
         }
+    
     }
     
     func getDescList() -> [String]{
@@ -76,8 +88,4 @@ class MoneyRecord: Object,ObjectKeyIdentifiable {
         let result = f.string(from: NSNumber(integerLiteral: amount)) ?? "\(amount)"
         return result
     }
-    
 }
-
-
-

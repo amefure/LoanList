@@ -38,12 +38,10 @@ class MoneyRecordTableViewController: UIViewController  {
     // MARK: - Override
     override func viewDidLoad() {
         
-        
         super.viewDidLoad()
         
-        
         // MARK: - View
-        nameLabelButton.setTitle(userDefaultsViewModels.getCurrentBorrower(), for: .normal)
+        nameLabelButton.setTitle(userDefaultsViewModels.getCurrentBorrowerName(), for: .normal)
         nameLabelButton.layer.cornerRadius = 5
         nameLabelButton.clipsToBounds = true
         
@@ -59,8 +57,6 @@ class MoneyRecordTableViewController: UIViewController  {
         sortViewButton.addTarget(self, action: #selector(tapSortViewButton), for: .touchUpInside)
         sortDetailButton.addTarget(self, action: #selector(tapSortDetailButton), for: .touchUpInside)
         
-
-        
         // MARK: - Admob
         admobViewModel.admobInit(vc: self)
         
@@ -70,7 +66,7 @@ class MoneyRecordTableViewController: UIViewController  {
         
         // 画面際描画時にViewを再構築
         // MARK: - View
-        nameLabelButton.setTitle(userDefaultsViewModels.getCurrentBorrower(), for: .normal)
+        nameLabelButton.setTitle(userDefaultsViewModels.getCurrentBorrowerName(), for: .normal)
         refreshData()
         setSort()
         setResultLabel()
@@ -81,12 +77,27 @@ class MoneyRecordTableViewController: UIViewController  {
         }
     }
     
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        super.shouldPerformSegue(withIdentifier: identifier, sender: sender)
+        if identifier == "showMoneyRecordView" {
+            let name = userDefaultsViewModels.getCurrentBorrowerName()
+            if name == "unknown"{
+                noUserAlert()
+                return false
+            }else{
+                return true
+            }
+        }else{
+            return true
+        }
+    }
+    
     // Segue遷移時にビューに値を渡す
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetailView" {
             if let indexPath = table.indexPathForSelectedRow {
                 guard let destination = segue.destination as? DetailViewController else {
-
+                    
                     return
                 }
                 let item = realmCRUDViewModel.moneyRecords?[indexPath.row]
@@ -95,9 +106,21 @@ class MoneyRecordTableViewController: UIViewController  {
         }
     }
     
+    // MARK: - Alert
+    private func noUserAlert(){
+        let message = "「unknown」をタップして\n貸し借りする相手を登録してください"
+        let alert = UIAlertController(title: "登録できません..!", message: message, preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default,handler: { action in
+            // ルート階層に戻る
+            self.navigationController?.popToRootViewController(animated: true)
+        })
+        alert.addAction(ok)
+        self.present(alert,animated: true)
+    }
+    
     // MARK: - Reuse View
     private func setResultLabel(){
-        let name = userDefaultsViewModels.getCurrentBorrower()
+        let name = userDefaultsViewModels.getCurrentBorrowerName()
         if name != "unknown"{
             if let currentBorrower = realmCRUDViewModel.currentBorrower {
                 let result = currentBorrower.calculationResult
@@ -144,8 +167,7 @@ class MoneyRecordTableViewController: UIViewController  {
         sortViewButton.tintColor = .orange
         self.pickerView.selectRow(4,inComponent: 0, animated:true)
         
-        
-        let name = userDefaultsViewModels.getCurrentBorrower()
+        let name = userDefaultsViewModels.getCurrentBorrowerName()
         if name != "unknown"{
             if let currentBorrower = realmCRUDViewModel.currentBorrower {
                 let result = currentBorrower.borrowSum
@@ -163,7 +185,7 @@ class MoneyRecordTableViewController: UIViewController  {
         sortViewButton.tintColor = .orange
         self.pickerView.selectRow(5,inComponent: 0, animated:true)
         
-        let name = userDefaultsViewModels.getCurrentBorrower()
+        let name = userDefaultsViewModels.getCurrentBorrowerName()
         if name != "unknown"{
             if let currentBorrower = realmCRUDViewModel.currentBorrower {
                 let result = currentBorrower.loanSum

@@ -30,7 +30,7 @@ class MoneyRecordTableViewCell: UITableViewCell {
         }
         
         let dvm = DateViewModel()
-        dateLabel.text = dvm.df.string(from: date)
+        dateLabel.text = dvm.getString(date)
        }
 
     override func awakeFromNib() {
