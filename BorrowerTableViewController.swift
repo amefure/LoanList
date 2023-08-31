@@ -13,6 +13,7 @@ class BorrowerTableViewController: UIViewController, UITableViewDataSource, UITa
     // MARK: - ViewModel
     private let realmCRUDViewModel = RealmCRUDViewModel()
     private let userDefaultsViewModels = UserDefaultsViewModels()
+    private let interstitial = AdmobInterstitialView()
     
     // MARK: - Models
     private let borrowers = RealmCRUDViewModel().readBorrowerList()
@@ -24,7 +25,7 @@ class BorrowerTableViewController: UIViewController, UITableViewDataSource, UITa
     // MARK: - ViewModel
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        interstitial.loadInterstitial()
         // MARK: - Admob
         AdMobViewModel().admobInit(vc: self)
     }
@@ -33,6 +34,10 @@ class BorrowerTableViewController: UIViewController, UITableViewDataSource, UITa
         realmCRUDViewModel.createBorrower(name: textField!.text!)
         table.reloadData()
         textField.text = ""
+        // インタースティシャル広告の表示
+        interstitial.presentInterstitial()
+        // 再読み込み
+        interstitial.loadInterstitial()
     }
     // MARK: - セルの数
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
